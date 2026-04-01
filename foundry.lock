@@ -1,0 +1,11 @@
+{
+  "lib/diamond-pau": {
+    "tag": {
+      "name": "v1.11.0",
+      "rev": "697a8dbb2cd5b46ae7b5c618e1d9c7efb112a83e"
+    }
+  },
+  "lib/forge-std": {
+    "rev": "e4aef94c1768803a16fe19f7ce8b65defd027cfd"
+  }
+}
