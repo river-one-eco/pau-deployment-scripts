@@ -22,7 +22,7 @@ spell, which calls the component repos' internal init libraries — `PAUInit`
 │   │   └── AdministeredAgentDeploy.sol  # deploy one AdministeredAgent via its factory
 │   ├── input/
 │   │   └── {chainId}/
-│   │       └── deploy-pau.json          # owner, pauFactory, agentFactory, stackCount, agentCount
+│   │       └── deploy-pau.json          # owner, pauFactory, agentFactory, beacon, stackCount, agentCount
 │   └── output/
 │       └── {chainId}/
 │           └── deploy-pau-latest.json   # exported addresses (generated)

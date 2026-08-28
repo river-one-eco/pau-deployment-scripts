@@ -25,7 +25,9 @@ interface IPAUFactoryLike {
  *         exported below.
  *
  * @dev    Input:  script/input/{chainId}/deploy-pau.json
- *                   { "owner", "pauFactory", "agentFactory", "stackCount", "agentCount" }
+ *                   { "owner", "pauFactory", "agentFactory", "beacon", "stackCount", "agentCount" }
+ *                 `beacon` is the expected canonical beacon; the script reverts unless the
+ *                 `pauFactory` reports it, so a wrong/untrusted factory is caught up front.
  *         Output: script/output/{chainId}/deploy-pau-latest.json (all deployed addresses)
  */
 contract DeployPAUScript is Script {
@@ -47,6 +49,11 @@ contract DeployPAUScript is Script {
         uint256 agentCount   = vm.parseJsonUint(input,    ".agentCount");
 
         require(stackCount > 0, "DeployPAUScript/zero-stack-count");
+
+        require(
+            IPAUFactoryLike(pauFactory).beacon() == vm.parseJsonAddress(input, ".beacon"),
+            "DeployPAUScript/unexpected-beacon"
+        );
 
         PAUDeployParams memory params = PAUDeployParams({
             pauFactory : pauFactory,

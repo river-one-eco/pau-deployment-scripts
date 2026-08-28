@@ -34,7 +34,7 @@ test-fork-mainnet:
 # --------------------------------------------------------------------------------------------------
 # Deploy: PAU system                                                                               #
 # --------------------------------------------------------------------------------------------------
-# Input:  script/input/{chainId}/deploy-pau.json (owner, pauFactory, agentFactory, stackCount, agentCount)
+# Input:  script/input/{chainId}/deploy-pau.json (owner, pauFactory, agentFactory, beacon, stackCount, agentCount)
 # Output: script/output/{chainId}/deploy-pau-latest.json
 
 deploy-pau-mainnet:
