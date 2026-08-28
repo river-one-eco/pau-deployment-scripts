@@ -3,8 +3,11 @@
 # Prerequisites:
 #   - ETH_FROM: deployer address
 #   - MAINNET_RPC_URL: chain RPC URL
-#   - MAINNET_API_KEY: Etherscan key (for --verify)
 #   - foundry keystore account named "deployer" (cast wallet import deployer --interactive)
+#
+# Note: no --verify — every contract is created by the canonical on-chain factories, whose
+# implementation source lives in the component repos, not here. There are no locally-compiled
+# contracts deployed by this script for Etherscan verification to act on.
 #
 # Deploys the PAU system: one shared ALMProxy + `stackCount` PAU stacks wired to it +
 # `agentCount` AdministeredAgents, all via the canonical on-chain factories, with the owner
@@ -37,7 +40,7 @@ test-fork-mainnet:
 deploy-pau-mainnet:
 	forge script script/DeployPAU.s.sol:DeployPAUScript \
 		--sender $(ETH_FROM) --account deployer --broadcast \
-		--verify --retries 10 --delay 10 --rpc-url $(MAINNET_RPC_URL)
+		--rpc-url $(MAINNET_RPC_URL)
 
 deploy-pau-mainnet-dryrun:
 	forge script script/DeployPAU.s.sol:DeployPAUScript \
