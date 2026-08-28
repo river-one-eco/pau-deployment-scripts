@@ -340,6 +340,8 @@ contract PAUDeployAndInit_Fork_Tests is Test {
     /*** Shared-Proxy Tests                                                                     ***/
     /**********************************************************************************************/
 
+    /// @dev Architecture for this is defined in: https://github.com/sky-ecosystem/diamond-pau/blob/dev/docs/ARCHITECTURE.md#multi-controller-topology-single-almproxy
+    /// @dev Reference commit for `diamond-pau`: ee6dc30022a5549bd9659180dbda6657bc269e5f
     function test_sharedProxy_twoStacks() external {
         PAUInstance memory instA = _deployPAU();
 
