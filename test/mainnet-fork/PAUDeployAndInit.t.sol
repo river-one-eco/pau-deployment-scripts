@@ -50,9 +50,27 @@ interface IAdministeredAgentLike {
 
 interface IControllerLike {
 
+    // Mirrors diamond-pau's IEnumerableIntegrations records (layout must match for ABI decoding).
+    struct Wire {
+        bytes4 callSelector;
+        bytes4 delegateSelector;
+    }
+
+    struct Config {
+        address facet;
+        Wire[]  wires;
+    }
+
+    struct Integration {
+        bytes32 id;
+        Config  config;
+    }
+
     function accessControls() external view returns (address);
 
     function beacon() external view returns (address);
+
+    function integrations() external view returns (Integration[] memory);
 
     function proxy() external view returns (address);
 
@@ -238,6 +256,15 @@ contract PAUDeployAndInit_Fork_Tests is Test {
                 inst.controller
             )
         );
+
+        // Check the passed integration ids are actually registered on the Controller,
+        // each wired to a facet with code.
+        IControllerLike.Integration[] memory integrations =
+            IControllerLike(inst.controller).integrations();
+
+        assertEq(integrations.length,      1);
+        assertEq(integrations[0].id,       TRANSFER_ASSET_INTEGRATION_ID);
+        assertGt(integrations[0].config.facet.code.length, 0);
     }
 
     function test_init_emptyIntegrationIds_skipsUpdate() external {
@@ -251,6 +278,9 @@ contract PAUDeployAndInit_Fork_Tests is Test {
                 inst.controller
             )
         );
+
+        // Empty ids => no updateIntegrations call => the Controller has no integrations registered.
+        assertEq(IControllerLike(inst.controller).integrations().length, 0);
     }
 
     function test_init_mismatchedRateLimits_reverts() external {
