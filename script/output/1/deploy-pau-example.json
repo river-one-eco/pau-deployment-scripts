@@ -1,0 +1,19 @@
+{
+  "accessControls": [
+    "0xB89749A66dC3BF3e584Bb80CD3Bf4DD0deE47711"
+  ],
+  "agentFactory": "0x2968c3b5478cF93B70aB1e24255d4EDBBd27a089",
+  "allocatorAgents": [
+    "0x69aE8f2e4F33337C8E4933E9BEAf824dF9c9B4f3"
+  ],
+  "almProxy": "0x63Bb119d41F43938dAb3aAA8cD637F241d82Ccb0",
+  "beacon": "0x829dC2b7E94B1954F0764E573f2E0d45Afa28199",
+  "controllers": [
+    "0xA72f3457DfB52FD0a7B986aD51CB21Cc21501cbf"
+  ],
+  "owner": "0x56a9bA5FE133EF4Ab1131E8ac7c4312a52284f5B",
+  "pauFactory": "0x69A5d548830AC2A4Ba90A44a2C75BDA71f97fc66",
+  "rateLimits": [
+    "0xE987099F0F003A13FB7086a450DB048CDa3C5c3F"
+  ]
+}
