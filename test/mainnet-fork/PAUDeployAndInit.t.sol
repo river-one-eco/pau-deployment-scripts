@@ -38,6 +38,10 @@ interface IALMProxyLike {
 
 interface IAdministeredAgentLike {
 
+    // Reverted by the agent's add* functions on a zero address (AdministeredAgentInit no longer
+    // pre-checks; it lets the agent reject).
+    error ZeroAccount();
+
     function getIsActor(address account) external view returns (bool);
 
     function getIsAdmin(address account) external view returns (bool);
@@ -416,7 +420,7 @@ contract PAUDeployAndInit_Fork_Tests is Test {
         address[] memory actors = new address[](1);
         actors[0] = address(0);
 
-        vm.expectRevert(bytes("AdministeredAgentInit/actor-zero-address"));
+        vm.expectRevert(IAdministeredAgentLike.ZeroAccount.selector);
         governance.initAgent(agent, AdministeredAgentInitParams({
             admins   : new address[](0),
             actors   : actors,
