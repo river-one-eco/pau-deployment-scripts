@@ -32,6 +32,31 @@ test-fork-mainnet:
 	forge test --match-path "test/mainnet-fork/*" -vvv
 
 # --------------------------------------------------------------------------------------------------
+# Post-deploy verification                                                                         #
+# --------------------------------------------------------------------------------------------------
+# Two modes of the same test suite (details in test/post-deploy/PostDeployTests.t.sol):
+#
+#   simulate — run BEFORE deploying. Runs DeployPAU.s.sol on a mainnet fork and checks its
+#              result. Proves the script works against the live factories, no gas spent.
+#   verify   — run AFTER deploying, BEFORE writing the activation spell. Checks the exported
+#              deploy-pau-latest.json against on-chain logs: every address was created by the
+#              canonical factory, `owner` is its only admin, and nothing is activated yet.
+#              Catches a front-run or nonce-desynced deployment before governance onboards it.
+#
+# Env (optional, see .env.example for more details):
+#   POSTDEPLOY_OUTPUT      verify only: export to check (default: see below)
+#   POSTDEPLOY_BLOCK       fork block (default latest; pin it for a reproducible run)
+#   POSTDEPLOY_FROM_BLOCK  verify only: first block scanned for logs (default 0)
+
+POSTDEPLOY_OUTPUT ?= script/output/1/deploy-pau-latest.json
+
+test-postdeploy-mainnet-simulate:
+	POSTDEPLOY_SIMULATE=true forge test --match-path "test/post-deploy/*" -vvv
+
+test-postdeploy-mainnet:
+	POSTDEPLOY_OUTPUT=$(POSTDEPLOY_OUTPUT) forge test --match-path "test/post-deploy/*" -vvv
+
+# --------------------------------------------------------------------------------------------------
 # Deploy: PAU system                                                                               #
 # --------------------------------------------------------------------------------------------------
 # Input:  script/input/{chainId}/deploy-pau.json (owner, pauFactory, agentFactory, beacon, stackCount, agentCount)
