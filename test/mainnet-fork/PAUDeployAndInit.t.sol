@@ -42,6 +42,12 @@ interface IAdministeredAgentLike {
     // pre-checks; it lets the agent reject).
     error ZeroAccount();
 
+    function addActor(address account) external;
+
+    function addGrantor(address account) external;
+
+    function addRevoker(address account) external;
+
     function getIsActor(address account) external view returns (bool);
 
     function getIsAdmin(address account) external view returns (bool);
@@ -441,6 +447,51 @@ contract PAUDeployAndInit_Fork_Tests is Test {
         );
 
         vm.expectRevert(bytes("AdministeredAgentInit/not-admin"));
+        governance.initAgent(agent, AdministeredAgentInitParams({
+            admins   : new address[](0),
+            actors   : new address[](0),
+            grantors : new address[](0),
+            revokers : new address[](0)
+        }));
+    }
+
+    // init must establish the role sets, not extend them: an agent that already has any actor,
+    // grantor or revoker (e.g. configured outside the spell) is rejected.
+
+    function test_initAgent_actorsNotEmpty_reverts() external {
+        address agent = _deployAgent();
+
+        governance.exec(agent, abi.encodeCall(IAdministeredAgentLike.addActor, (actor)));
+
+        vm.expectRevert(bytes("AdministeredAgentInit/actors-not-empty"));
+        governance.initAgent(agent, AdministeredAgentInitParams({
+            admins   : new address[](0),
+            actors   : new address[](0),
+            grantors : new address[](0),
+            revokers : new address[](0)
+        }));
+    }
+
+    function test_initAgent_grantorsNotEmpty_reverts() external {
+        address agent = _deployAgent();
+
+        governance.exec(agent, abi.encodeCall(IAdministeredAgentLike.addGrantor, (grantor)));
+
+        vm.expectRevert(bytes("AdministeredAgentInit/grantors-not-empty"));
+        governance.initAgent(agent, AdministeredAgentInitParams({
+            admins   : new address[](0),
+            actors   : new address[](0),
+            grantors : new address[](0),
+            revokers : new address[](0)
+        }));
+    }
+
+    function test_initAgent_revokersNotEmpty_reverts() external {
+        address agent = _deployAgent();
+
+        governance.exec(agent, abi.encodeCall(IAdministeredAgentLike.addRevoker, (revoker)));
+
+        vm.expectRevert(bytes("AdministeredAgentInit/revokers-not-empty"));
         governance.initAgent(agent, AdministeredAgentInitParams({
             admins   : new address[](0),
             actors   : new address[](0),
