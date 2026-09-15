@@ -28,7 +28,10 @@ interface IPAUFactoryLike {
  *                   { "owner", "pauFactory", "agentFactory", "beacon", "stackCount", "agentCount" }
  *                 `beacon` is the expected canonical beacon; the script reverts unless the
  *                 `pauFactory` reports it, so a wrong/untrusted factory is caught up front.
- *         Output: script/output/{chainId}/deploy-pau-latest.json (all deployed addresses)
+ *         Output: script/output/{chainId}/deploy-pau-latest.json (all deployed addresses, plus
+ *                 `deployBlock`: the fork block the script was simulated at, a lower bound on the
+ *                 blocks the broadcast transactions land in, used by the post-deploy tests as the
+ *                 default `eth_getLogs` scan start)
  */
 contract DeployPAUScript is Script {
 
@@ -84,8 +87,11 @@ contract DeployPAUScript is Script {
 
         vm.stopBroadcast();
 
-        // Export all deployed addresses for the spell / reviewers.
+        // Export all deployed addresses for the spell / reviewers, plus the block the script was
+        // simulated at. The broadcast transactions are mined at or after this block, so it is a
+        // lower bound on the deploy blocks: all a log-scan start needs (see PostDeployTests).
         string memory out;
+        out = vm.serializeUint(NAME,    "deployBlock",    block.number);
         out = vm.serializeAddress(NAME, "owner",          owner);
         out = vm.serializeAddress(NAME, "pauFactory",     pauFactory);
         out = vm.serializeAddress(NAME, "agentFactory",   agentFactory);

@@ -25,7 +25,7 @@ spell, which calls the component repos' internal init libraries — `PAUInit`
 │   │       └── deploy-pau.json          # owner, pauFactory, agentFactory, beacon, stackCount, agentCount
 │   └── output/
 │       └── {chainId}/
-│           └── deploy-pau-latest.json   # exported addresses (generated)
+│           └── deploy-pau-latest.json   # exported addresses + deployBlock (generated)
 ├── test/
 │   ├── mainnet-fork/                    # deploy + init fork tests against the canonical factories
 │   ├── post-deploy/                     # verifies a real deployment's output JSON against mined logs
@@ -80,8 +80,11 @@ The same assertions run in two modes:
 - `make test-postdeploy-mainnet` (`POSTDEPLOY_OUTPUT=<path>`): reconciles the exported
   `script/output/{chainId}/deploy-pau-latest.json` against the chain from mined logs
   (`eth_getLogs` on `MAINNET_RPC_URL`). Run it after the real deployment and
-  before the activation spell, which legitimately adds events. Pin `POSTDEPLOY_BLOCK` to a block
-  right after the deployment for a reproducible run.
+  before the activation spell, which legitimately adds events. Logs are scanned from the
+  export's `deployBlock` (the block the script was simulated at, a lower bound on the blocks the
+  deploy transactions landed in) up to the fork block, so the window is a few blocks wide and
+  fits any RPC's block-range cap; `POSTDEPLOY_FROM_BLOCK` overrides it. Pin `POSTDEPLOY_BLOCK`
+  to a block right after the deployment for a reproducible run.
 
 The suite is skipped when neither variable is set.
 

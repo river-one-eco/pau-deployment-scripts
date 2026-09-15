@@ -36,8 +36,12 @@ import {
  *
  *         - `POSTDEPLOY_OUTPUT=<path>`: verify a real deployment. The path is relative to the
  *           project root (e.g. `script/output/1/deploy-pau-latest.json`); logs come from the
- *           chain via `eth_getLogs`, scanned from `POSTDEPLOY_FROM_BLOCK` (default 0). Pin
- *           `POSTDEPLOY_BLOCK` to a block right after the deployment for a reproducible run.
+ *           chain via `eth_getLogs`, scanned from the export's `deployBlock` (the block the
+ *           script was simulated at, a lower bound on the deploy blocks) up to the fork block, so
+ *           the window is only a few blocks wide and fits any RPC's block-range cap. Override
+ *           the scan start with `POSTDEPLOY_FROM_BLOCK`. Pin `POSTDEPLOY_BLOCK` to a block right
+ *           after the deployment for a reproducible run. A `deployBlock` that is too high can
+ *           only make the scan miss the deploy logs (a false failure), never a false pass.
  *
  *         - `POSTDEPLOY_SIMULATE=true`: run `DeployPAUScript` on the fork inside the test (from
  *           `script/input/{chainId}/deploy-pau.json`), then verify what it produced from the
@@ -79,8 +83,6 @@ contract PostDeployTests is PostDeployTestBase {
         if (forkBlock == 0) vm.createSelectFork("mainnet");
         else                vm.createSelectFork("mainnet", forkBlock);
 
-        fromBlock = vm.envOr("POSTDEPLOY_FROM_BLOCK", uint256(0));
-
         if (simulateEnv) {
             outputPath = string.concat(
                 "script/output/", vm.toString(block.chainid), "/deploy-pau-latest.json"
@@ -105,6 +107,13 @@ contract PostDeployTests is PostDeployTestBase {
         require(accessControls.length > 0,                    "PostDeployTests/no-stacks");
         require(rateLimits.length  == accessControls.length,  "PostDeployTests/rate-limits-length");
         require(controllers.length == accessControls.length,  "PostDeployTests/controllers-length");
+
+        // Scan logs from the block the script was simulated at (a lower bound on the deploy
+        // blocks) unless overridden, so the `eth_getLogs` window stays a few blocks wide. Only
+        // used in verify mode; simulate mode reads the recorded logs.
+        fromBlock = vm.envOr("POSTDEPLOY_FROM_BLOCK", vm.parseJsonUint(output, ".deployBlock"));
+
+        require(fromBlock <= block.number, "PostDeployTests/from-block-after-fork-block");
     }
 
     /**

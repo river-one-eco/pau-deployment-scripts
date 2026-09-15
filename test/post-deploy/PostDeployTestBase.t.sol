@@ -143,8 +143,9 @@ abstract contract PostDeployTestBase is Test {
     /// @dev When true, `_getLogs` reads `recordedLogs` instead of querying the RPC.
     bool internal simulate;
 
-    /// @dev First block scanned by `eth_getLogs`. Narrow it via `POSTDEPLOY_FROM_BLOCK` for RPCs
-    ///      that reject unbounded ranges. Logs are always scanned up to the fork block.
+    /// @dev First block scanned by `eth_getLogs` (verify mode only). Defaults to the export's
+    ///      `deployBlock`, override via `POSTDEPLOY_FROM_BLOCK`. Logs are always scanned up to
+    ///      the fork block, so the window is a few blocks wide and fits RPC block-range caps.
     uint256 internal fromBlock;
 
     /// @dev Logs captured while the deploy script ran (simulate mode only).

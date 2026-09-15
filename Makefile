@@ -46,7 +46,8 @@ test-fork-mainnet:
 # Env (optional, see .env.example for more details):
 #   POSTDEPLOY_OUTPUT      verify only: export to check (default: see below)
 #   POSTDEPLOY_BLOCK       fork block (default latest; pin it for a reproducible run)
-#   POSTDEPLOY_FROM_BLOCK  verify only: first block scanned for logs (default 0)
+#   POSTDEPLOY_FROM_BLOCK  verify only: first block scanned for logs (default: the export's
+#                          `deployBlock`, so the scan window is only a few blocks wide)
 
 POSTDEPLOY_OUTPUT ?= script/output/1/deploy-pau-latest.json
 
@@ -60,7 +61,7 @@ test-postdeploy-mainnet:
 # Deploy: PAU system                                                                               #
 # --------------------------------------------------------------------------------------------------
 # Input:  script/input/{chainId}/deploy-pau.json (owner, pauFactory, agentFactory, beacon, stackCount, agentCount)
-# Output: script/output/{chainId}/deploy-pau-latest.json
+# Output: script/output/{chainId}/deploy-pau-latest.json (addresses + deployBlock)
 
 deploy-pau-mainnet:
 	forge script script/DeployPAU.s.sol:DeployPAUScript \
