@@ -20,6 +20,8 @@ import { SpellHarness } from "../utils/SpellHarness.sol";
 
 interface IAccessControlLike {
 
+    function grantRole(bytes32 role, address account) external;
+
     function hasRole(bytes32 role, address account) external view returns (bool);
 
 }
@@ -343,6 +345,20 @@ contract PAUDeployAndInit_Fork_Tests is Test {
         );
 
         vm.expectRevert(bytes("PAUInit/not-access-controls-admin"));
+        governance.initPAU(inst, new bytes32[](0));
+    }
+
+    // init must run on an inert stack: an AccessControls that already has an ALLOCATOR_ROLE
+    // member (e.g. granted outside the spell) is rejected.
+    function test_init_allocatorAgentsPresent_reverts() external {
+        PAUInstance memory inst = _deployPAU();
+
+        governance.exec(
+            inst.accessControls,
+            abi.encodeCall(IAccessControlLike.grantRole, (ALLOCATOR_ROLE, makeAddr("agent")))
+        );
+
+        vm.expectRevert(bytes("PAUInit/allocator-agents-present"));
         governance.initPAU(inst, new bytes32[](0));
     }
 
