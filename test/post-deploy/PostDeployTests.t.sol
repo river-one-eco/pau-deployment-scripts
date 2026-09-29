@@ -28,6 +28,8 @@ import {
  *
  *         Per exported contract it proves:
  *           - provenance: the canonical factory emitted `<Component>Deployed` for that address,
+ *                         and (verify mode) the transaction behind that log was sent by the
+ *                         export's `deployer` to the factory,
  *           - admin set:  its complete log history is the single constructor grant to `owner`
  *                         (sender = factory) and nothing else,
  *           - state:      `owner` is admin, no activation has happened, Controller wiring matches.
@@ -93,6 +95,7 @@ contract PostDeployTests is PostDeployTestBase {
             output = vm.readFile(string.concat(vm.projectRoot(), "/", outputPath));
         }
 
+        deployer     = vm.parseJsonAddress(output, ".deployer");
         owner        = vm.parseJsonAddress(output, ".owner");
         pauFactory   = vm.parseJsonAddress(output, ".pauFactory");
         agentFactory = vm.parseJsonAddress(output, ".agentFactory");

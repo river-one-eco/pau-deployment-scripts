@@ -61,7 +61,7 @@ test-postdeploy-mainnet:
 # Deploy: PAU system                                                                               #
 # --------------------------------------------------------------------------------------------------
 # Input:  script/input/{chainId}/deploy-pau.json (owner, pauFactory, agentFactory, beacon, stackCount, agentCount)
-# Output: script/output/{chainId}/deploy-pau-latest.json (addresses + deployBlock)
+# Output: script/output/{chainId}/deploy-pau-latest.json (addresses + deployBlock + deployer)
 
 deploy-pau-mainnet:
 	forge script script/DeployPAU.s.sol:DeployPAUScript \

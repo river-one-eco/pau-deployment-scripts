@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.8.34;
 
-import { Script }  from "../lib/forge-std/src/Script.sol";
-import { console } from "../lib/forge-std/src/console.sol";
+import { Script }              from "../lib/forge-std/src/Script.sol";
+import { console2 as console } from "../lib/forge-std/src/console2.sol";
 
 import {
     AdministeredAgentDeploy,
@@ -31,7 +31,8 @@ interface IPAUFactoryLike {
  *         Output: script/output/{chainId}/deploy-pau-latest.json (all deployed addresses, plus
  *                 `deployBlock`: the fork block the script was simulated at, a lower bound on the
  *                 blocks the broadcast transactions land in, used by the post-deploy tests as the
- *                 default `eth_getLogs` scan start)
+ *                 default `eth_getLogs` scan start; and `deployer`: the broadcasting account,
+ *                 checked against each deploy transaction by the post-deploy tests)
  */
 contract DeployPAUScript is Script {
 
@@ -70,6 +71,8 @@ contract DeployPAUScript is Script {
         address[] memory agents         = new address[](agentCount);
 
         vm.startBroadcast();
+
+        _serializeDeployer();
 
         (accessControls[0], almProxy, rateLimits[0], controllers[0]) = PAUDeploy.deploy(params);
 
@@ -119,6 +122,16 @@ contract DeployPAUScript is Script {
         for (uint256 i = 0; i < agentCount; i++) {
             console.log("allocatorAgent", i, agents[i]);
         }
+    }
+
+    /// @dev The account signing the broadcast transactions, recorded in the export so the
+    ///      post-deploy tests can check each deploy transaction against it. Must be called
+    ///      inside the broadcast (where the signer is readable); a separate function to avoid
+    ///      a stack too deep error in `run`.
+    function _serializeDeployer() internal {
+        ( , address deployer, ) = vm.readCallers();
+        console.log("deployer:", deployer);
+        vm.serializeAddress(NAME, "deployer", deployer);
     }
 
 }

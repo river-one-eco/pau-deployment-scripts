@@ -117,6 +117,17 @@ interface IPAUFactoryLike {
 
 }
 
+/// @dev `vm.rpcJson` (forge >= 1.8): like `vm.rpc` but returns the raw JSON result instead of an
+///      ABI-encoded guess at it, so object results such as transactions can be read with the JSON
+///      cheatcodes. Declared here because the vendored forge-std predates it.
+interface IVmRpcJson {
+
+    function rpcJson(string calldata method, string calldata params)
+        external
+        returns (string memory data);
+
+}
+
 /**
  * @title  PostDeployTestBase
  * @notice Shared helpers for the post-deploy verification tests. Modelled on Spark's
@@ -142,6 +153,9 @@ abstract contract PostDeployTestBase is Test {
 
     /// @dev When true, `_getLogs` reads `recordedLogs` instead of querying the RPC.
     bool internal simulate;
+
+    /// @dev The export's `deployer`: the account that broadcast the deploy script.
+    address internal deployer;
 
     /// @dev First block scanned by `eth_getLogs` (verify mode only). Defaults to the export's
     ///      `deployBlock`, override via `POSTDEPLOY_FROM_BLOCK`. Logs are always scanned up to
@@ -264,7 +278,36 @@ abstract contract PostDeployTestBase is Test {
         assertEq(logs[0].topics[0],             topic0,  string.concat(label, ": topic0"));
         assertEq(_toAddress(logs[0].topics[1]), child,   string.concat(label, ": topic1"));
 
+        if (!simulate) _assertSentByDeployer(logs[0].transactionHash, factory, label);
+
         return logs[0];
+    }
+
+    /**
+     * @dev Asserts the mined transaction `transactionHash` was sent by `deployer` to `factory`.
+     *      A log only carries the transaction hash, not its sender, so the transaction itself is
+     *      fetched from the fork RPC (`eth_getTransactionByHash`). Together with the factory's
+     *      Deployed log in that transaction, this closes the chain: our account called the
+     *      canonical factory, which created the exported address.
+     */
+    function _assertSentByDeployer(bytes32 transactionHash, address factory, string memory label)
+        internal
+    {
+        string memory transaction = IVmRpcJson(address(vm)).rpcJson(
+            "eth_getTransactionByHash",
+            string.concat('["', vm.toString(transactionHash), '"]')
+        );
+
+        assertEq(
+            vm.parseJsonAddress(transaction, ".from"),
+            deployer,
+            string.concat(label, ": deploy tx sender")
+        );
+        assertEq(
+            vm.parseJsonAddress(transaction, ".to"),
+            factory,
+            string.concat(label, ": deploy tx recipient")
+        );
     }
 
     /**********************************************************************************************/

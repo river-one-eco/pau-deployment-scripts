@@ -25,7 +25,7 @@ spell, which calls the component repos' internal init libraries — `PAUInit`
 │   │       └── deploy-pau.json          # owner, pauFactory, agentFactory, beacon, stackCount, agentCount
 │   └── output/
 │       └── {chainId}/
-│           └── deploy-pau-latest.json   # exported addresses + deployBlock (generated)
+│           └── deploy-pau-latest.json   # exported addresses + deployBlock + deployer (generated)
 ├── test/
 │   ├── mainnet-fork/                    # deploy + init fork tests against the canonical factories
 │   ├── post-deploy/                     # verifies a real deployment's output JSON against mined logs
@@ -84,7 +84,9 @@ The same assertions run in two modes:
   export's `deployBlock` (the block the script was simulated at, a lower bound on the blocks the
   deploy transactions landed in) up to the fork block, so the window is a few blocks wide and
   fits any RPC's block-range cap; `POSTDEPLOY_FROM_BLOCK` overrides it. Pin `POSTDEPLOY_BLOCK`
-  to a block right after the deployment for a reproducible run.
+  to a block right after the deployment for a reproducible run. Every `Deployed` log's mined
+  transaction is also fetched and asserted to have been sent by the export's `deployer` to the
+  factory, so verify mode needs forge >= 1.8.
 
 The suite is skipped when neither variable is set.
 

@@ -12,6 +12,7 @@
     "0xA72f3457DfB52FD0a7B986aD51CB21Cc21501cbf"
   ],
   "deployBlock": 25855129,
+  "deployer": "0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38",
   "owner": "0x56a9bA5FE133EF4Ab1131E8ac7c4312a52284f5B",
   "pauFactory": "0x69A5d548830AC2A4Ba90A44a2C75BDA71f97fc66",
   "rateLimits": [
