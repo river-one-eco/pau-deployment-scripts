@@ -12,9 +12,9 @@ import { PAUDeploy, PAUDeployParams } from "../../script/dependencies/PAUDeploy.
 
 import {
     AdministeredAgentInitParams
-} from "../../migrate/pau-administered-agent/deploy/AdministeredAgentInit.sol";
+} from "../../lib/pau-administered-agent/deploy/AdministeredAgentInit.sol";
 
-import { PAUInstance } from "../../migrate/diamond-pau/deploy/PAUInit.sol";
+import { PAUInstance } from "../../lib/diamond-pau/deploy/PAUInit.sol";
 
 import { SpellHarness } from "../utils/SpellHarness.sol";
 

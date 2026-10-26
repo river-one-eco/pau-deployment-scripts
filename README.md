@@ -26,18 +26,11 @@ spell, which calls the component repos' internal init libraries — `PAUInit`
 │   └── output/
 │       └── {chainId}/
 │           └── deploy-pau-latest.json   # exported addresses + deployBlock + deployer (generated)
-├── test/
-│   ├── mainnet-fork/                    # deploy + init fork tests against the canonical factories
-│   ├── post-deploy/                     # verifies a real deployment's output JSON against mined logs
-│   └── utils/
-│       └── SpellHarness.sol             # governance-proxy stand-in that runs the init libraries
-└── migrate/                             # TEMPORARY: vendored audited init libs (see migrate/README.md)
-    ├── diamond-pau/
-    │   └── deploy/
-    │       └── PAUInit.sol              # → swaps to the lib/diamond-pau submodule once its PR lands
-    └── pau-administered-agent/
-        └── deploy/
-            └── AdministeredAgentInit.sol
+└── test/
+    ├── mainnet-fork/                    # deploy + init fork tests against the canonical factories
+    ├── post-deploy/                     # verifies a real deployment's output JSON against mined logs
+    └── utils/
+        └── SpellHarness.sol             # governance-proxy stand-in that runs the init libraries
 ```
 
 ## Usage
@@ -89,8 +82,3 @@ The same assertions run in two modes:
   factory, so verify mode needs forge >= 1.8.
 
 The suite is skipped when neither variable is set.
-
-## Status
-
-The two PAU init libraries are currently **vendored under `migrate/`** while their component-repo
-PRs are open; see `migrate/README.md` for the submodule swap once they land.

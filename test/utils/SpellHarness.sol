@@ -1,16 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.8.34;
 
-// NOTE: init libraries are imported from `migrate/` while they await their PRs into the
-// component repos. Once landed and added as submodules, flip these imports to
-// `../../lib/diamond-pau/deploy/PAUInit.sol` etc. — the file contents are identical.
-
 import {
     AdministeredAgentInit,
     AdministeredAgentInitParams
-} from "../../migrate/pau-administered-agent/deploy/AdministeredAgentInit.sol";
+} from "../../lib/pau-administered-agent/deploy/AdministeredAgentInit.sol";
 
-import { PAUInit, PAUInstance } from "../../migrate/diamond-pau/deploy/PAUInit.sol";
+import { PAUInit, PAUInstance } from "../../lib/diamond-pau/deploy/PAUInit.sol";
 
 /**
  * @notice Test stand-in for the governance proxy (PauseProxy / SubProxy) executing a spell
